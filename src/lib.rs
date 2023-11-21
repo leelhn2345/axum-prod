@@ -1,6 +1,6 @@
 use std::net::TcpListener;
 
-use axum::{http::StatusCode, routing::get, Error, Router};
+use axum::{http::StatusCode, routing::get, Router};
 
 async fn health_check() -> StatusCode {
     StatusCode::OK
@@ -11,7 +11,7 @@ pub async fn run(addr: TcpListener) {
     let app = Router::new().route("/health_check", get(health_check));
 
     axum::Server::from_tcp(addr)
-        .unwrap()
+        .expect("invalid tcp address")
         .serve(app.into_make_service())
         .await
         .expect("failed to start server");
