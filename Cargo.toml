@@ -2,6 +2,11 @@
 name = "axum-prod"
 version = "0.1.0"
 edition = "2021"
+description = "implementation of a news publisher with axum"
+license = "N.A"
+readme = "README.md"
+keywords = ["axum", "psql", "tracing"]
+repository = "www.google.com"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

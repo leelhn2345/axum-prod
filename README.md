@@ -6,4 +6,4 @@ rust](https://www.zero2prod.com/index.html) uses
 
 I feel that the book has huge re-read value, and I would like to reimplement the
 source code with [`axum`](https://github.com/tokio-rs/axum). There are also
-other crates that i would like to experiment with, such as ['aide'](https://github.com/tamasfe/aide).
+other crates that i would like to experiment with, such as ['utoipa'](https://github.com/tamasfe/aide).
