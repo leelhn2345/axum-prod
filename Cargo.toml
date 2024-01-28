@@ -3,4 +3,15 @@ name = "axum-prod"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+path = "src/main.rs"
+name = "axum-prod"
+
 [dependencies]
+axum = "0.7.4"
+reqwest = "0.11.23"
+serde = { version = "1.0.196", features = ["derive"] }
+tokio = { version = "1.35.1", features = ["macros", "rt-multi-thread"] }
