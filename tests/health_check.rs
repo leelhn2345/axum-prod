@@ -1,3 +1,5 @@
+use axum_prod::{configuration::get_configuration, startup::run};
+use sqlx::{Connection, PgConnection};
 use tokio::net::TcpListener;
 
 /// spawns server on a random port.
@@ -9,7 +11,7 @@ async fn spawn_app() -> String {
         .expect("failed to bind to random port");
     let port = listener.local_addr().unwrap().port();
 
-    tokio::spawn(axum_prod::run(listener));
+    tokio::spawn(run(listener));
 
     format!("http://127.0.0.1:{port}")
 }
@@ -39,6 +41,12 @@ async fn subscribe_returns_a_200_for_valid_form_data() {
     let address = spawn_app().await;
 
     let client = reqwest::Client::new();
+    let configuration = get_configuration().expect("failed to read configuration");
+    let connection_string = configuration.database.connection_string();
+
+    let mut connection = PgConnection::connect(&connection_string)
+        .await
+        .expect("failed to connect to postgres");
 
     let body = "name=le%20guin&email=ursula_le_guin%50gmail.com";
 
@@ -51,6 +59,14 @@ async fn subscribe_returns_a_200_for_valid_form_data() {
         .expect("failed to execute request");
 
     assert_eq!(200, response.status().as_u16());
+
+    let saved = sqlx::query("SELECT email, name FROM subscriptions")
+        .fetch_one(&mut connection)
+        .await
+        .expect("failed to fetch saved subscription");
+
+    assert_eq!(saved.email, "ursula_le_guin@gmail.com");
+    assert_eq!(saved.name, "le guin");
 }
 
 #[tokio::test]

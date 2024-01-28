@@ -12,6 +12,15 @@ name = "axum-prod"
 
 [dependencies]
 axum = "0.7.4"
+config = "0.13.4"
 reqwest = "0.11.23"
 serde = { version = "1.0.196", features = ["derive"] }
+sqlx = { version = "0.7.3", default-features = false, features = [
+  "runtime-tokio-rustls",
+  "macros",
+  "postgres",
+  "uuid",
+  "chrono",
+  "migrate",
+] }
 tokio = { version = "1.35.1", features = ["macros", "rt-multi-thread"] }
