@@ -8,6 +8,10 @@ I feel that the book has huge re-read value, and I would like to reimplement the
 source code with [`axum`](https://github.com/tokio-rs/axum). There are also
 other crates that i would like to experiment with, such as ['utoipa'](https://github.com/tamasfe/aide).
 
+## Prereq
+
+- [bunyan](https://github.com/LukeMathWalker/bunyan)
+
 ## Todos
 
 - [ ] implement utoipa
