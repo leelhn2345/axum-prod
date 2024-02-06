@@ -58,11 +58,10 @@ jobs:
           # It may also be useful if a newer version of a dependency is published
           # that no longer builds on your system, or has other problems.
 
-      - name: Install postgresql-client
-        run: sudo apt update && sudo apt install postgresql-client -y
-
       - name: Migrate database
-        run: SKIP_DOCKER=true ./scripts/init_db.sh
+        run: |
+          sudo apt-get install libpq-dev -y
+          SKIP_DOCKER=true ./scripts/init_db.sh
 
       - name: Run tests
         run: cargo test
