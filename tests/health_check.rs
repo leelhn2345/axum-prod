@@ -105,27 +105,28 @@ async fn subscribe_returns_a_200_for_valid_form_data() {
 
     let body = "name=le%20guin&email=ursula_le_guin%40gmail.com";
 
+    // Act
     let response = client
-        .post(format!("{}/subscriptions", app.address))
+        .post(&format!("{}/subscriptions", &app.address))
         .header("Content-Type", "application/x-www-form-urlencoded")
         .body(body)
         .send()
         .await
-        .expect("failed to execute request");
+        .expect("Failed to execute request.");
 
     assert_eq!(200, response.status().as_u16());
 
-    let saved = sqlx::query!("SELECT email, name FROM subscriptions")
+    let saved = sqlx::query!("SELECT email, name FROM subscriptions",)
         .fetch_one(&app.db_pool)
         .await
-        .expect("failed to fetch saved subscription");
+        .expect("Failed to fetch saved subscription.");
 
     assert_eq!(saved.email, "ursula_le_guin@gmail.com");
     assert_eq!(saved.name, "le guin");
 }
 
 #[tokio::test]
-async fn subsribe_retunrs_a_422_when_data_is_missing() {
+async fn subscribe_returns_a_422_when_data_is_missing() {
     let app = spawn_app().await;
 
     let client = reqwest::Client::new();
