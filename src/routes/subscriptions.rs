@@ -29,22 +29,22 @@ pub async fn subscribe(State(pool): State<PgPool>, Form(form): Form<FormData>) -
 ///
 /// # Errors
 ///
-/// This function will return an error if failed to execute query.
+/// This function will return an error if fails to execute query.
 #[tracing::instrument(
     name = "Saving new subscriber details in the database",
     skip(form, pool)
 )]
 pub async fn insert_subscriber(pool: &PgPool, form: &FormData) -> Result<(), sqlx::Error> {
-    sqlx::query(
+    sqlx::query!(
         r"
         INSERT INTO subscriptions (id, email, name, subscribed_at)
         VALUES ($1, $2, $3, $4)
         ",
+        Uuid::new_v4(),
+        form.email.clone(),
+        form.name.clone(),
+        Utc::now()
     )
-    .bind(Uuid::new_v4())
-    .bind(form.email.clone())
-    .bind(form.name.clone())
-    .bind(Utc::now())
     .execute(pool)
     .await
     .map_err(|e| {
