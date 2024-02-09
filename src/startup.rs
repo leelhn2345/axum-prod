@@ -21,6 +21,7 @@ use tower_http::trace::TraceLayer;
 ///
 /// Panics if cannot start app.
 pub async fn run(listener: TcpListener, db_pool: PgPool) {
+    // axum middleware trace layer
     let trace_layer = ServiceBuilder::new().layer(
         TraceLayer::new_for_http()
             .make_span_with(|request: &Request<Body>| {
@@ -45,10 +46,14 @@ pub async fn run(listener: TcpListener, db_pool: PgPool) {
     );
     let app = Router::new()
         .route("/", get(root))
-        .route("/health", get(health_check))
+        .route("/health_check", get(health_check))
         .route("/subscriptions", post(subscribe))
         .with_state(db_pool)
         .layer(trace_layer);
+
+    if let Ok(addr) = listener.local_addr() {
+        tracing::info!("starting service on {}", addr);
+    }
 
     axum::serve(listener, app).await.expect("cannot start app");
 }
