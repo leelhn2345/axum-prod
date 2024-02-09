@@ -46,10 +46,11 @@ pub async fn run(listener: TcpListener, db_pool: PgPool) {
     );
     let app = Router::new()
         .route("/", get(root))
-        .route("/health_check", get(health_check))
         .route("/subscriptions", post(subscribe))
         .with_state(db_pool)
-        .layer(trace_layer);
+        .layer(trace_layer)
+        // put `/health_check` after trace layer to reduce noise in logs.
+        .route("/health_check", get(health_check));
 
     if let Ok(addr) = listener.local_addr() {
         tracing::info!("starting service on {}", addr);
