@@ -16,6 +16,7 @@ chrono = { version = "0.4.33", default-features = false, features = ["clock"] }
 config = "0.14.0"
 secrecy = { version = "0.8.0", features = ["serde"] }
 serde = { version = "1.0.196", features = ["derive"] }
+serde-aux = "4.4.0"
 sqlx = { version = "0.7.3", default-features = false, features = [
   "runtime-tokio-rustls",
   "macros",
