@@ -9,7 +9,7 @@ use axum::{
 };
 use sqlx::PgPool;
 use tokio::net::TcpListener;
-use tracing::{Level, Span};
+use tracing::Span;
 
 use crate::routes::{health_check, root, subscribe};
 use tower::ServiceBuilder;
@@ -26,8 +26,7 @@ pub async fn run(listener: TcpListener, db_pool: PgPool) {
         TraceLayer::new_for_http()
             .make_span_with(|request: &Request<Body>| {
                 let request_id = uuid::Uuid::new_v4();
-                tracing::span!(
-                    Level::INFO,
+                tracing::info_span!(
                     "request",
                     method = tracing::field::display(request.method()),
                     uri = tracing::field::display(request.uri()),
