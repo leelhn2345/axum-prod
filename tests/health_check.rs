@@ -1,5 +1,6 @@
 use axum_prod::{
     configuration::{get_configuration, DatabaseSettings},
+    send_email::EmailClient,
     startup::run,
     telemetry::{get_subscriber, init_subscriber},
 };
@@ -44,8 +45,13 @@ async fn spawn_app() -> TestApp {
     let mut configuration = get_configuration().expect("failed to read configuration.");
     configuration.database.database_name = Uuid::new_v4().to_string();
     let connection_pool = configure_database(&configuration.database).await;
+    let sender_email = configuration
+        .email_client
+        .sender()
+        .expect("Invalid sender email address.");
+    let email_client = EmailClient::new(configuration.email_client.base_url, sender_email);
 
-    tokio::spawn(run(listener, connection_pool.clone()));
+    tokio::spawn(run(listener, connection_pool.clone(), email_client));
 
     TestApp {
         address,
@@ -175,9 +181,9 @@ async fn subscribe_returns_a_400_when_fields_are_present_but_empty() {
             .expect("failed to execute request");
 
         assert_eq!(
-            200,
+            400,
             response.status().as_u16(),
-            "The API did not return a 400 OK when the payload was{description}"
+            "The API did not return a 400 OK when the payload was {description}"
         );
     }
 }

@@ -11,7 +11,10 @@ use sqlx::PgPool;
 use tokio::net::TcpListener;
 use tracing::Span;
 
-use crate::routes::{health_check, root, subscribe};
+use crate::{
+    routes::{health_check, root, subscribe},
+    send_email::EmailClient,
+};
 use tower::ServiceBuilder;
 use tower_http::trace::TraceLayer;
 
@@ -20,7 +23,7 @@ use tower_http::trace::TraceLayer;
 /// # Panics
 ///
 /// Panics if cannot start app.
-pub async fn run(listener: TcpListener, db_pool: PgPool) {
+pub async fn run(listener: TcpListener, db_pool: PgPool, email_client: EmailClient) {
     // axum middleware trace layer
     let trace_layer = ServiceBuilder::new().layer(
         TraceLayer::new_for_http()
@@ -47,6 +50,7 @@ pub async fn run(listener: TcpListener, db_pool: PgPool) {
         .route("/", get(root))
         .route("/subscriptions", post(subscribe))
         .with_state(db_pool)
+        .with_state(email_client)
         .layer(trace_layer)
         // put `/health_check` after trace layer to reduce noise in logs.
         .route("/health_check", get(health_check));
